@@ -13,26 +13,10 @@
       "./mixins"
     ]
   },
-  "User": {
-    "dataSource": "db"
-  },
-  "AccessToken": {
+  "AuthUser": {
     "dataSource": "db",
-    "public": false
-  },
-  "ACL": {
-    "dataSource": "db",
-    "public": false
-  },
-  "RoleMapping": {
-    "dataSource": "db",
-    "public": false
-  },
-  "Role": {
-    "dataSource": "db",
-    "public": false
-  },
-  "Message": {
-    "dataSource": null
+    "public": true,
+    "$promise": {},
+    "$resolved": true
   }
 }

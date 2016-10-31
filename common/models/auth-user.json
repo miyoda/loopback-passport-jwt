@@ -1,0 +1,35 @@
+{
+  "name": "AuthUser",
+  "base": "PersistedModel",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "id": true
+    },
+    "email": {
+      "type": "string",
+      "index": true
+    },
+    "facebookId": {
+      "type":  "string",
+      "index": true
+    },
+    "facebookToken": {
+      "type":  "string",
+      "index": true
+    },
+    "facebookProfile": {
+      "type":  "object",
+      "index": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

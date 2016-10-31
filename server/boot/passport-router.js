@@ -2,32 +2,38 @@
 
 module.exports = function(app) {
   var router = app.loopback.Router();
+  var jwt = require('jsonwebtoken');
 
-  var User = app.models.User;
+  var AuthUser = app.models.AuthUser;
 
   var passport = require('passport');
-  var BearerStrategy = require('passport-http-bearer').Strategy
   var FacebookStrategy = require('passport-facebook').Strategy;
   //var googleStrategy = require('passport-google').Strategy;
 
   //facebook auth setup
   var options = {
+    secret: 'ssssssssssssh',
+    expiresInSeconds: (30),
     authPath: '/auth',
     facebook: {
       clientID: '882422281866614',
       clientSecret: '5fcf8f7efb718e447e22c7dee5458121',
-      callbackURL: 'http://localhost:3000/auth/facebook/callback'
+      callbackURL: 'http://localhost:3000/auth/facebook/callback',
+      profileFields: ['id', 'displayName', 'photos', 'email']
     }
   };
   passport.use(
        new FacebookStrategy(
            options.facebook,
            function(accessToken, refreshToken, profile, done) {
-               User.findOrCreate(
+               console.log('profile: '+ JSON.stringify(profile));
+               AuthUser.replaceOrCreate(
                    { facebookId: profile.id },
                    function (err, result) {
                        if(result) {
-                           result.access_token = accessToken;
+                           result.email = result.email ? result.email : profile.email;
+                           result.facebookProfile = profile;
+                           result.facebookToken = accessToken;
                            result.save(function(err, doc) {
                                done(err, doc);
                            });
@@ -39,24 +45,7 @@ module.exports = function(app) {
            }
        )
    );
-   passport.use(
-      new BearerStrategy(
-          function(token, done) {
-              User.findOne({ access_token: token },
-                  function(err, user) {
-                      if(err) {
-                          return done(err)
-                      }
-                      if(!user) {
-                          return done(null, false)
-                      }
-
-                      return done(null, user, { scope: 'all' })
-                  }
-              );
-          }
-      )
-  );
+   
    router.get(options.authPath+'/facebook',
        passport.authenticate('facebook', { session: false, scope: [] })
    );
@@ -64,13 +53,21 @@ module.exports = function(app) {
    router.get(options.authPath+'/facebook/callback',
        passport.authenticate('facebook', { session: false, failureRedirect: "/" }),
        function(req, res) {
-           res.redirect("/status?access_token=" + req.user.access_token);
+           var token = jwt.sign(req.user, options.secret, { expiresIn: options.expiresInSeconds });
+           console.log('user: '+ JSON.stringify(req.user));
+           console.log('token: %s ', token);
+           res.set("Authorization", "Bearer "+token);
+           res.redirect(options.authPath+'/status');
        }
    );
    router.get(options.authPath+'/status',
-      passport.authenticate('bearer', { session: false }),
       function(req, res) {
-          res.send("LOGGED IN as " + req.user.facebookId + " - <a href=\"/logout\">Log out</a>");
+        var token = req.get("Authorization")
+        // verify a token symmetric
+        jwt.verify(token, options.secret, function(err, decoded) {
+          console.log('user: '+ JSON.stringify(decoded));
+          res.send("LOGGED IN as: " + JSON.stringify(decoded));
+        });
       }
   );
 
