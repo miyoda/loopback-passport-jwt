@@ -1,10 +1,12 @@
 'use strict';
 
 module.exports = function(app) {
-  var router = app.loopback.Router();
   var jwt = require('jsonwebtoken');
+  let yyyymmdd = require('yyyy-mm-dd')
 
-  var AuthUser = app.models.AuthUser;
+  var router = app.loopback.Router();
+  var Authuser = app.models.Authuser;
+  var Login = app.models.Login;
 
   var passport = require('passport');
   var FacebookStrategy = require('passport-facebook').Strategy;
@@ -27,25 +29,37 @@ module.exports = function(app) {
            options.facebook,
            function(accessToken, refreshToken, profile, done) {
                console.log('profile: '+ JSON.stringify(profile));
-               AuthUser.replaceOrCreate(
-                   { facebookId: profile.id },
+               var profileEmail = profile._json.email;
+               Authuser.findOne(
+                   { "where": {"or": [{"facebookId": profile.id},{"email": profileEmail}] }},
                    function (err, result) {
                        if(result) {
-                           result.email = result.email ? result.email : profile.email;
-                           result.facebookProfile = profile;
-                           result.facebookToken = accessToken;
-                           result.save(function(err, doc) {
-                               done(err, doc);
-                           });
-                       } else {
+                         fillInfo(result);
+                         result.save(function(err, result) {
                            done(err, result);
+                           Login.create({authuserId: result.id, date: yyyymmdd()});
+                         });
+                       } else {
+                         Authuser.create(fillInfo({}), function (err, result) {
+                           done(err, result);
+                           Login.create({authuserId: result.id, date: yyyymmdd()});
+                         });
                        }
                    }
                );
+
+               function fillInfo(result) {
+                 result.email = result.email ? result.email : profileEmail;
+                 delete profile['_json'];
+                 delete profile['_raw'];
+                 result.facebookProfile = profile;
+                 result.facebookToken = accessToken;
+                 return result;
+               }
            }
        )
    );
-   
+
    router.get(options.authPath+'/facebook',
        passport.authenticate('facebook', { session: false, scope: [] })
    );

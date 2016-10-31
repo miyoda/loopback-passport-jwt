@@ -30,12 +30,14 @@
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.4.0",
+    "loopback-connector-mongodb": "^1.17.0",
     "loopback-datasource-juggler": "^2.39.0",
     "passport": "0.2.0",
     "passport-facebook": "1.0.3",
     "passport-google": "^0.3.0",
     "serve-favicon": "^2.0.1",
-    "strong-error-handler": "^1.0.1"
+    "strong-error-handler": "^1.0.1",
+    "yyyy-mm-dd": "^1.0.1"
   },
   "devDependencies": {
     "eslint": "^2.13.1",

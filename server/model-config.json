@@ -13,7 +13,13 @@
       "./mixins"
     ]
   },
-  "AuthUser": {
+  "Authuser": {
+    "dataSource": "db",
+    "public": true,
+    "$promise": {},
+    "$resolved": true
+  },
+  "Login": {
     "dataSource": "db",
     "public": true,
     "$promise": {},
