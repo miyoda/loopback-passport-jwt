@@ -1,0 +1,91 @@
+{
+  "name": "Authuser",
+  "plural": "Authusers",
+  "base": "PersistedModel",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "id": true
+    },
+    "facebookId": {
+      "type": "string",
+      "index": true
+    },
+    "twitterId": {
+      "type": "string",
+      "index": true
+    },
+    "googleId": {
+      "type": "string",
+      "index": true
+    },
+    "localId": {
+      "type": "string",
+      "index": true
+    },
+    "facebookToken": {
+      "type": "string",
+      "index": true
+    },
+    "twitterToken": {
+      "type": "string",
+      "index": true
+    },
+    "googleToken": {
+      "type": "string",
+      "index": true
+    },
+    "localPassword": {
+      "type": "string",
+      "index": true
+    },
+    "email": {
+      "type": "string",
+      "index": false
+    },
+    "name": {
+      "type": "string",
+      "index": false
+    },
+    "birthday": {
+      "type": "date",
+      "index": false
+    },
+    "gender": {
+      "type": "string",
+      "index": false
+    },
+    "phone": {
+      "type": "number",
+      "index": false
+    },
+    "verifiedPhone": {
+      "type": "boolean",
+      "index": false
+    },
+    "entryDate": {
+      "type": "date",
+      "index": false
+    },
+    "photos": {
+      "type": [
+        "string"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {
+    "logins": {
+      "type": "hasMany",
+      "model": "Login",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
